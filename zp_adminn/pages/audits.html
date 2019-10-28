@@ -1,0 +1,360 @@
+<!-- <link href="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+	<link href="https://cdn.bootcss.com/font-awesome/5.10.2/css/all.css" rel="stylesheet">
+	<link rel="stylesheet" href="http://at.alicdn.com/t/font_1328608_ae2fr1q1jsc.css">
+	<script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+	<script src="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script> -->
+<script>
+$(function(){
+	var baseURL='http://203.195.246.58:7777'
+	//封装时间函数
+	var dateParse=(dataString)=>{
+	if(dataString){
+		let date = new Date(dataString);
+		let Y = date.getFullYear() + '-';
+		let M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-';
+		let D = (date.getDate()< 10 ? '0'+date.getDate() : date.getDate())+' ';
+		let h = (date.getHours()< 10 ? '0'+date.getHours() : date.getHours())+ ':';
+		let m = (date.getMinutes()< 10 ? '0'+date.getMinutes() : date.getMinutes())+ ':';
+		let s = (date.getSeconds()< 10 ? '0'+date.getSeconds() : date.getSeconds());
+		 	return Y+M+D+h+m+s;
+		  }else{
+		    return '';
+		  }
+		}
+	//查询商家信息
+	function loadBussiness(){
+	var url=baseURL+"/Business/findAll"
+	$.get(url,function(result){
+		$("#bussiness_table tbody").empty();
+		result.data.forEach(function(item){
+			if(item.status==='审核通过'){
+				$(`	<tr>
+				<td><input type="checkbox" value="`+item.id+`"></td>
+				<td>`+item.name+`</td>
+				<td>`+item.contactName+`</td>
+				<td>`+item.contactPhone+`</td>
+				<td>`+item.industry+`</td>
+				<td>`+item.location+`</td>
+				<td>`+item.scale+`</td>
+				<td><a href="#" id='san'>查看</a></td>
+				<td>
+				<span style='color:#008000 '>审核通过</span>
+				</td>
+			</tr>`).appendTo($('#firsts'));
+			}else if(item.status==='拒绝'){
+				$(`	<tr>
+				<td><input type="checkbox" value="`+item.id+`"></td>
+				<td>`+item.name+`</td>
+				<td>`+item.contactName+`</td>
+				<td>`+item.contactPhone+`</td>
+				<td>`+item.industry+`</td>
+				<td>`+item.location+`</td>
+				<td>`+item.scale+`</td>
+				<td><a href="#" id='san'>查看</a></td>
+				<td>
+				<span  style='color:#ff0000'>已拒绝</span>
+				</td>
+			</tr>`).appendTo($('#firsts'));
+			}else if(item.status==='待审核'){
+				$(`	<tr>
+				<td><input type="checkbox" value="`+item.id+`"></td>
+				<td>`+item.name+`</td>
+				<td>`+item.contactName+`</td>
+				<td>`+item.contactPhone+`</td>
+				<td>`+item.industry+`</td>
+				<td>`+item.location+`</td>
+				<td>`+item.scale+`</td>
+				<td><a href="#" id='san'>查看</a></td>
+				<td>
+				<button id="btn_to" class="layui-btn layui-btn-xs">通过</button>
+				<button id="btn_ju" class="layui-btn layui-btn-xs">拒绝</button>
+				</td>
+			</tr>`).appendTo($('#firsts'));
+			}
+			})
+		})
+	}
+	loadBussiness();
+	//查询招聘信息
+	function loadEmployment(){
+	var url=baseURL+"/Employment/findAll";
+	$('#secends').empty();
+	$.get(url,function(result){
+		result.data.forEach(function(item){
+			if(item.auditStatus==='待审核'){
+				$(`	<tr>
+    				<td> <input type="checkbox" value="`+item.id+`"></td>
+    				<td>`+item.title+`</td>
+    				<td>`+item.contactName+`</td>
+    				<td>`+item.contactPhone+`</td>
+    				<td>`+item.job+`</td>
+    				<td>`+dateParse(item.publishTime)+`</td>
+    				<td><a href="#" id="show_Modal">查看</a></td>
+    				<td> 
+    				<button id="btn_ton" class="layui-btn layui-btn-xs">通过</button>
+					<button id="btn_jue" class="layui-btn layui-btn-xs">拒绝</button> 
+    				</td>
+    			</tr>`).appendTo($('#secends'));
+			}else if(item.auditStatus==='审核通过'){
+				$(`	<tr>
+    				<td> <input type="checkbox" value="`+item.id+`"></td>
+    				<td>`+item.title+`</td>
+    				<td>`+item.contactName+`</td>
+    				<td>`+item.contactPhone+`</td>
+    				<td>`+item.job+`</td>
+    				<td>`+dateParse(item.publishTime)+`</td>
+    				<td><a href="#" id="show_Modal">查看</a></td>
+    				<td> 
+    					<span style='color:#008000 '>审核通过</span>
+    				</td>
+    			</tr>`).appendTo($('#secends'));
+			}else if(item.auditStatus==='拒绝'){
+				$(`	<tr>
+    				<td> <input type="checkbox" value="`+item.id+`"></td>
+    				<td>`+item.title+`</td>
+    				<td>`+item.contactName+`</td>
+    				<td>`+item.contactPhone+`</td>
+    				<td>`+item.job+`</td>
+    				<td>`+dateParse(item.publishTime)+`</td>
+    				<td><a href="#" id="show_Modal">查看</a></td>
+    				<td> 
+    					<span  style='color:#ff0000'>已拒绝</span>
+    				</td>
+    			</tr>`).appendTo($('#secends'));
+			}
+		})
+	})
+
+}
+loadEmployment();
+//给按钮绑定通过或者拒绝商家事件
+$('tbody').on('click','button',function(){
+		switch(this.id){
+			case 'btn_to':
+				var id=$(this).parents('tr').children().eq(0).find('input').val();
+				var name=$(this).parents('tr').children().eq(1).text();
+				var contactName=$(this).parents('tr').children().eq(2).text();
+				var contactPhone=$(this).parents('tr').children().eq(3).text();
+				var industry=$(this).parents('tr').children().eq(4).text();
+				var scale='未知'
+				var establishedTime='1111'
+				var registeredCapital='666'
+				var description='可以';
+				var businessLicense='00'
+				var status='审核通过'
+				var url=baseURL+'/Business/saveOrUpdate'
+				var data={
+							id:id,
+							name:name,
+							contactName:contactName,
+							contactPhone:contactPhone,
+							industry:industry,
+							location:location,
+							scale:scale,
+							establishedTime:establishedTime,
+							registeredCapital:registeredCapital,
+							description:description,
+							businessLicense:businessLicense,
+							status:status
+						}
+						$.post(url,data,function(result){
+							loadBussiness();
+							
+						})
+				break;
+			case 'btn_ju':
+				var id=$(this).parents('tr').children().eq(0).find('input').val();
+				var name=$(this).parents('tr').children().eq(1).text();
+				var contactName=$(this).parents('tr').children().eq(2).text();
+				var contactPhone=$(this).parents('tr').children().eq(3).text();
+				var industry=$(this).parents('tr').children().eq(4).text();
+				var scale='未知'
+				var establishedTime='1111'
+				var registeredCapital='666'
+				var description='可以';
+				var businessLicense='00'
+				var status='拒绝'
+				var url=baseURL+'/Business/saveOrUpdate'
+				var data={
+							id:id,
+							name:name,
+							contactName:contactName,
+							contactPhone:contactPhone,
+							industry:industry,
+							location:location,
+							scale:scale,
+							establishedTime:establishedTime,
+							registeredCapital:registeredCapital,
+							description:description,
+							businessLicense:businessLicense,
+							status:status
+						}
+						$.post(url,data,function(result){
+							loadBussiness();
+							
+						})
+				
+				break;
+			}
+		
+	})
+//给按钮绑定通过或者拒绝招聘事件
+$('tbody').on('click','button',function(){
+		switch(this.id){
+			case 'btn_ton':
+				var id=$(this).parents('tr').children().eq(0).find('input').val();
+				var title=$(this).parents('tr').children().eq(1).text();
+				var job=$(this).parents('tr').children().eq(4).text();
+				var businessId='2355'
+				var salary='50000k';
+				var welfare='五险一金';
+				var status='呃呃呃';
+				var description='reeeeexxx';
+				var auditStatus='审核通过';
+				var workingHours='4'
+				var contactName='aa';
+				var contactPhone='15589303039'
+				var num='35'
+				var url=baseURL+'/Employment/saveOrUpdate'
+				var data={
+							id:id,
+							title:title,
+							num:num,
+							businessId:businessId,
+							job:job,
+							salary:salary,
+							welfare:welfare,
+							status:status,
+							description:description,
+							auditStatus:auditStatus,
+							workingHours:workingHours,
+							contactPhone:contactPhone,
+							contactName:contactName
+						}
+						$.post(url,data,function(result){
+							loadEmployment();
+							
+						})
+				break;
+			case 'btn_jue':
+				var id=$(this).parents('tr').children().eq(0).find('input').val();
+				var title=$(this).parents('tr').children().eq(1).text();
+				var job=$(this).parents('tr').children().eq(4).text();
+				var businessId='2355'
+				var salary='50000k';
+				var welfare='五险一金';
+				var status='呃呃呃';
+				var description='reeeeexxx';
+				var auditStatus='拒绝';
+				var workingHours='4'
+				var contactName='aa';
+				var contactPhone='15589303039'
+				var num='30'
+
+				var url=baseURL+'/Employment/saveOrUpdate'
+				var data={
+							id:id,
+							title:title,
+							num:num,
+							businessId:businessId,
+							job:job,
+							salary:salary,
+							welfare:welfare,
+							status:status,
+							description:description,
+							auditStatus:auditStatus,
+							workingHours:workingHours,
+							contactPhone:contactPhone,
+							contactName:contactName
+						}
+						$.post(url,data,function(result){
+						loadEmployment();
+							
+						})
+				
+				break;
+
+			}
+
+	})
+
+})
+</script>
+
+
+
+
+<div class="main">
+<div class="layui-tab">
+  <ul class="layui-tab-title">
+    <li class="layui-this">商家审核</li>
+    <li>招聘审核</li>
+  </ul>
+  <div class="layui-tab-content">
+    <div class="layui-tab-item layui-show">
+     	<table class="table" id="bussiness_table">
+			<thead class="bg-dark" style="color:white">
+				<tr>
+					<td>编号</td>
+					<td>企业名称</td>
+					<td>联系人</td>
+					<td>联系方式</td>
+					<td>行业</td>
+					<td>所在地</td>
+					<td>公司规模</td>
+					<td>详情</td>
+					<td>操作</td>
+				</tr>
+			</thead>
+			<tbody id="firsts">
+			  
+			</tbody>
+		</table>
+    </div>
+    <div class="layui-tab-item">
+    	<form style="" >
+    	</form>
+    	<table class="table">
+    		<thead class="bg-dark" style="color:white">
+    		    	<tr>
+			    	<td>#</td>
+			    	<td>招聘标题</td>
+			    	<td>发布人</td>
+			    	<td>联系方式</td>
+			    	<td>职位</td>
+			    	<td>发布时间</td>
+			    	<td>详情</td>
+			    	<td>操作</td>
+    			</tr>				
+    		</thead>
+    		<tbody id="secends">
+    			
+    		</tbody>
+    	</table>
+    </div>
+  </div>
+</div>
+</div>
+<style>
+	#btn_to{
+		background-color: #008000;
+		
+		color: white;
+	}
+	#btn_ju{
+		background-color: #ff0000;
+		
+		color: white;
+	}
+	#btn_ton{
+		background-color: #008000;
+		
+		
+		color: white;
+	}
+	#btn_jue{
+		background-color: #ff0000;
+		
+		color: white;
+	}
+</style>

@@ -1,0 +1,115 @@
+<!-- <link href="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+	<link href="https://cdn.bootcss.com/font-awesome/5.10.2/css/all.css" rel="stylesheet">
+	<link rel="stylesheet" href="http://at.alicdn.com/t/font_1328608_ae2fr1q1jsc.css">
+	<script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+	<script src="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script> -->
+<script>
+	$(function(){
+		var baseURL='http://203.195.246.58:7777';
+			//查询所有数据
+			function loadAllcity(){
+				var url=baseURL+'/City/findAll'
+				$('.child_bottom').empty();
+				$.get(url,function(result){
+					result.data.forEach(function(item){
+						$('.child_bottom').append($(`<span class='sp'>`+item.name+`</span>`))
+					})
+					$('.child_bottom').append($(`<a href="#" class='af'>添加</a>`))
+				})
+
+			}
+			loadAllcity();
+			//点击添加按钮显示输入框
+			$('.child_bottom').on({click:function(){
+				$('.child_bottom a').remove();
+				$('.child_bottom').append($(`<input type="text" name='submit' id='input_sub' placeholder="请输入城市名称"> <button class='btns'>添加</button>`))
+			}},'a');
+			//点击添加按钮进行添加操作
+			$('.child_bottom').on({click:function(){
+				var name=$('input[name=submit]').val();
+				var data={
+					name:name
+				}
+				$.post(baseURL+'/City/saveOrUpdate',data,function(res){
+					alert('成功')
+					loadAllcity();
+				})
+			}},'button')
+
+
+	})
+</script>
+
+
+
+<div class="core">
+	<button id="btn_city" class="layui-btn layui-btn-primary layui-btn-sm"><i class="fa fa-info-circle" style="margin-right:5px"></i>添加省份</button>
+	<div class="child">
+		<div class="child_top bg-dark">
+			<span>北京</span>
+		</div>
+		<div class="child_bottom">
+			<!-- <span>朝阳</span>
+			<span>西城</span>
+			<span>东城</span>
+			<input type="text" name=''> <button>添加</button>
+			<a href="#">添加</a>	 -->
+		</div>
+	</div>
+</div>
+<style>
+	.child{
+		width:100%;
+		height: 100px;
+		
+		
+		
+		border: 1px solid #ccc;
+		
+
+	}
+	.child_top{
+		box-sizing: border-box;
+		display: inline-block;
+		width: 100%;
+		height: 30%;
+		color: #fff;
+		padding: 5px;
+		font-size: 16px;
+
+	}
+	.child_bottom{
+		width: 100%;
+		height: 70%;
+
+	}
+	.sp{
+		margin-right: 10px;
+		font-family: '宋体';
+		font-size: 12px;
+
+	}
+	.af{
+		font-size: 12px;
+	}
+	.btns{
+		background-color: #0080ff;
+		color: white;
+		width: 40px;
+		height: 20px;
+		font-size: 12px;
+	}
+	#input_sub{
+		font-size: 14px;
+	}
+	
+	#btn_city{
+		margin-left: 1350px;
+		margin-bottom: 5px;
+		
+		color: white;
+		background-color: #ff6600;
+		text-align: center;
+
+	}
+</style>

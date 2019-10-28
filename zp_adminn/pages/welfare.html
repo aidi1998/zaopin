@@ -1,0 +1,114 @@
+<!-- <link href="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+	<link href="https://cdn.bootcss.com/font-awesome/5.10.2/css/all.css" rel="stylesheet">
+	<link rel="stylesheet" href="http://at.alicdn.com/t/font_1328608_ae2fr1q1jsc.css">
+	<script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+	<script src="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script> -->
+<script>
+	$(function(){
+	var baseURL='http://203.195.246.58:7777';
+	//根据ID传值
+	$('tbody').on('click','button',function(){
+		switch(this.id){
+			case 'btn_do':
+				var id=$(this).parents('tr').children().eq(0).find('input').val();
+				var name=$(this).parents('tr').children().eq(1).text();
+				var status='被冻结';
+				var url=baseURL+'/Welfare/saveOrUpdate'
+				var data={
+							id:id,
+							name:name,
+							status:status
+						}
+						$.post(url,data,function(){
+							loadCity();
+						})
+
+				break;
+			case 'btn_hu':
+				var id=$(this).parents('tr').children().eq(0).find('input').val();
+				var name=$(this).parents('tr').children().eq(1).text();
+				var status='使用中';
+				var url=baseURL+'/Welfare/saveOrUpdate'
+				var data={
+							id:id,
+							name:name,
+							status:status
+						}
+						$.post(url,data,function(){
+							loadCity();
+						})
+
+			}
+	})
+	//查询所有数据
+	function loadCity(){
+		var url=baseURL+'/Welfare/findAll'
+		$('tbody').empty();
+		$.get(url,function(result){
+			result.data.forEach(function(item){
+				if(item.status==='使用中'){
+					$(`<tr>
+					<td> <input type="checkbox" value="`+item.id+`"></td>
+					<td>`+item.name+`</td>
+					<td style='color: #008000'>`+item.status+`</td>
+					<td>
+						<button id="btn_do" class="layui-btn layui-btn-primary layui-btn-sm">冻结</button>
+					</td>
+					</tr>`).appendTo('tbody');
+				}else if(item.status==='被冻结'){
+					$(`<tr>
+					<td> <input type="checkbox" value="`+item.id+`"></td>
+					<td>`+item.name+`</td>
+					<td style='color: #ff6600'>`+item.status+`</td>
+					<td>
+						<button id='btn_hu'  class="layui-btn layui-btn-primary layui-btn-sm">恢复</button>
+					</td>
+					</tr>`).appendTo('tbody');
+				}
+			})
+		})
+	}
+	loadCity();
+
+	})
+	
+	
+
+</script>
+<div>
+	<div>
+	<form >
+		<div class="form-group col-md-2 ">
+	      <label for="select_location"></label>
+	      <select id="select_location" class="form-control">
+	       <option value="" style="display: none;">全部</option>
+	      </select>
+	    </div>
+	</form>
+	<table class="table">
+		<thead class="bg-dark" style="color:white">
+			<tr>
+				<td>#</td>
+				<td>福利名称</td>
+				<td>状态</td>
+				<td>操作</td>
+			</tr>
+		</thead>
+		<tbody>
+			
+		</tbody>
+	</table>
+</div>
+</div>
+<style>
+	#btn_do{
+		background-color: #ff6600;
+		color: white;
+		
+	}
+	#btn_hu{
+		background-color: #008000;
+		color: white;
+		
+	}
+</style>

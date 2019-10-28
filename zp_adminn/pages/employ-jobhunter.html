@@ -1,0 +1,165 @@
+<!-- <link href="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+	<link href="https://cdn.bootcss.com/font-awesome/5.10.2/css/all.css" rel="stylesheet">
+	<link rel="stylesheet" href="http://at.alicdn.com/t/font_1328608_ae2fr1q1jsc.css">
+	<script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+	<script src="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script> -->
+<script>
+	$(function(){
+		var baseURL='http://203.195.246.58:7777'
+		//封装时间函数
+	var dateParse=(dataString)=>{
+	if(dataString){
+		let date = new Date(dataString);
+		let Y = date.getFullYear() + '-';
+		let M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-';
+		let D = (date.getDate()< 10 ? '0'+date.getDate() : date.getDate())+' ';
+		let h = (date.getHours()< 10 ? '0'+date.getHours() : date.getHours())+ ':';
+		let m = (date.getMinutes()< 10 ? '0'+date.getMinutes() : date.getMinutes())+ ':';
+		let s = (date.getSeconds()< 10 ? '0'+date.getSeconds() : date.getSeconds());
+		 	return Y+M+D+h+m+s;
+		  }else{
+		    return '';
+		  }
+		}
+		//查询数据
+		function loadEmploy_job(){
+			var url=baseURL+'/EmploymentJobhunter/findAllWithJobhAndEmpl';
+			$.get(url,function(result){
+				result.data.forEach(function(item){
+					$(`<tr>
+					<td><input type="checkbox" value="`+item.jobhunter.id+`"></td>
+				  	<td>`+item.jobhunter.realname+`</td>
+				  	<td>`+item.jobhunter.telephone+`</td>
+					<td>
+					  	<a href="#" id='sub_jia'>简历</a>
+					</td>
+				  	<td>`+dateParse(item.askTime)+`</td>
+				  </tr>`).appendTo('tbody');
+				})
+			})
+
+		}
+		loadEmploy_job();
+		$('tbody').on('click','a',function(){
+			$('#employment_jobModal').modal('show');
+
+		})
+		//将数据渲染到简历页面中
+		function loadSpan(){
+			$('tbody').on('click','a',function(){
+			var id=$(this).parents('tr').children().eq(0).find('input').val();
+			var data={
+				id:id
+			}
+			$('#res_name').empty();
+			$.get(baseURL+'/Jobhunter/findById',data,function(res){
+					$(`<span id="re_name">`+res.data.realname+`</span>
+				       	<i class="fa fa-mobile" style="color:#3385ff; font-size: 20px;"></i>
+				       	<span>手机认证</span>
+				       	<div style="background-color: #3385ff;width:100px;text-align: center;
+				color: white;font-weight: bolder;">
+				       		个人信息
+				       	</div>
+				       	<div class="ree">
+				       		<span>性别：</span> <span>`+res.data.gender+`</span>
+				       		<span style="margin-left: 200px;">最高学历：</span><span>`+res.data.education+`</span>
+				       	</div>
+				       	<div class="ree">
+				       		<span>出生年月：</span> <span>`+res.data.birth+`</span>
+				       		<span style="margin-left: 155px;">工作经验：</span><span>`+res.data.workTime+`</span>
+				       		
+				       	</div>`).appendTo($('#res_name'))
+			
+			})
+			
+		})
+		}
+
+		loadSpan();
+	})
+</script>
+
+
+<div class="main">
+<button id="btn_da" class="layui-btn layui-btn-disabled">待联系</button>
+<table class="table" id="employ_job_table">
+	<thead  >
+		<tr>
+			<td>#</td>
+			<td>求职人</td>
+			<td>联系方式</td>
+			<td>求职岗位</td>
+			<td>申请时间</td>
+		</tr>
+			
+			
+	</thead>
+	<tbody>
+	
+	</tbody>
+</table>
+<!-- 简历模态框 -->
+	<div class="modal fade" id="employment_jobModal">
+		  <div class="modal-dialog  modal-lg" role="document">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <h4 class="modal-title">简历</h4>
+		      </div>
+		      <div class="modal-body">
+		       <div id="res_name">
+		       	<!-- <span id="re_name">张三三</span>
+		       	<i class="fa fa-mobile" style="color:#3385ff; font-size: 20px;"></i>
+		       	<span>手机认证</span>
+		       	<div style="background-color: #3385ff;width:100px;text-align: center;
+		color: white;font-weight: bolder;">
+		       		个人信息
+		       	</div>
+		       	<div class="ree">
+		       		<span>性别：</span> <span>女</span>
+		       		<span style="margin-left: 200px;">最高学历：</span><span>本科</span>
+		       	</div>
+		       	<div class="ree">
+		       		<span>出生年月：</span> <span>女</span>
+		       		<span style="margin-left: 155px;">工作经验：</span><span>本科</span>
+		       		
+		       	</div> -->
+		       </div>
+		      </div>
+		      <div class="modal-footer">
+		        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+		        <button type="button" class="btn btn-primary" >提交</button>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+</div>
+<style>
+	thead{
+		font-weight: bolder;
+	}
+	#btn_da{
+		width: 100px;
+		height: 40px;
+		margin-bottom: 10px;
+	}
+	.modal-backdrop.show{
+		z-index: -1;
+	}
+	.employment_jobModal{
+		margin-left: 40px;
+	}
+	#re_name{
+		font-size: 30px;
+
+
+
+		
+
+	}
+	.ree>span{
+		font-size: 20px;
+		font-weight: bolder;
+		color: grey;
+
+	}
+</style>

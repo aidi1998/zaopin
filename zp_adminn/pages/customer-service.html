@@ -1,0 +1,290 @@
+<script>
+	$(function(){
+	var baseURL='http://203.195.246.58:7777';
+	//根据性别查找客服
+	var data;
+	$('#select_gender').change(function(){
+		var val=$(this).val();
+		var obj={
+			gender:val
+		}
+		$('tbody').empty();
+		$.get(baseURL+'/CustomerService/findByGender',obj,function(res){
+			data=res.data
+			res.data.forEach(function(item){
+				$(`	<tr>
+				<td><input type="checkbox" value="`+item.id+`"></td>
+				<td>`+item.username+`</td>
+				<td>`+item.realname+`</td>
+				<td>`+item.gender+`</td>
+				<td>`+item.status+`</td>
+				<td>
+				<i class="fa fa-trash-o" id="del_customer"></i>
+				<i class="fa fa-edit" id="upn_customer"></i>
+				</td>
+				</tr>`).appendTo('tbody');
+			})
+		})
+	})
+	//根据状态查找客服
+	var data;
+	$('#select_status').change(function(){
+		var val=$(this).val();
+		var obj={
+			status:val
+		}
+		$('tbody').empty();
+		$.get(baseURL+'/CustomerService/findByEducation',obj,function(res){
+			data=res.data
+			res.data.forEach(function(item){
+				$(`	<tr>
+				<td><input type="checkbox" value="`+item.id+`"></td>
+				<td>`+item.username+`</td>
+				<td>`+item.realname+`</td>
+				<td>`+item.gender+`</td>
+				<td>`+item.status+`</td>
+				<td>
+				<i class="fa fa-trash-o" id="del_customer"></i>
+				<i class="fa fa-edit" id="upn_customer"></i>
+				</td>
+				</tr>`).appendTo('tbody');
+			})
+		})
+	})
+
+
+
+
+	function loadCustomer(){
+	//查询用户
+	var url=baseURL+"/CustomerService/findAll"
+	$.get(url,function(result){
+		$("#customer_table tbody").empty();
+		result.data.forEach(function(item){
+				$(`	<tr>
+			<td><input type="checkbox" value="`+item.id+`"></td>
+			<td>`+item.username+`</td>
+			<td>`+item.realname+`</td>
+			<td>`+item.gender+`</td>
+			<td>`+item.status+`</td>
+			<td>
+			<i class="fa fa-trash-o" id="del_customer"></i>
+			<i class="fa fa-edit" id="upn_customer"></i>
+			</td>
+		</tr>`).appendTo('tbody');
+			})
+		})
+	}
+	loadCustomer();
+	//删除数据
+	function deleteCustomer(){
+		$('tbody').on('click','i',function(event){
+			switch(this.id){
+				case 'del_customer':
+					var url=baseURL+'/CustomerService/deleteById';
+					var id=$(this).parents('tr').children().eq(0).find('input').val();
+					var data={
+						id:id
+					}
+					$.post(url,data,function(result){
+						if(result.status===200){
+							alert('删除成功');
+							loadCustomer();
+						}else{
+							alert('删除失败');
+						}
+					})
+					break;
+				case 'upn_customer':
+					var id=$(this).parents('tr').children().eq(0).find('input').val();
+					var realname=$(this).parents('tr').children().eq(2).text();
+					var username=$(this).parents('tr').children().eq(1).text();
+					var status=$(this).parents('tr').children().eq(4).text();
+					var gender=$(this).parents('tr').children().eq(3).text();
+					var id=$('#input_id').val(id);
+					var realname=$('#input_realname').val(realname);
+					var username=$('#input_username').val(username);
+					var gender=$('input[type=radio]:checked').val(gender);
+					var status=$('#input_status').val(status);
+					$('#customerModal').modal('show');
+					break;
+			}
+		})
+	}
+	deleteCustomer();
+	//添加修改数据
+	$('#btn_submit').on('click',function(){
+		var id=$('#input_id').val();
+		var realname=$('#input_realname').val();
+		var username=$('#input_username').val();
+		var gender=$('input[type=radio]:checked').val();
+		var status=$('#input_status').val();
+		var url=baseURL+'/CustomerService/saveOrUpdate';
+		var data;
+		if(id){
+			data={
+				id:id,
+				realname:realname,
+				username:username,
+				gender:gender,
+				status:status
+			}
+		}else{
+			data={
+				realname:realname,
+				username:username,
+				gender:gender,
+				status:status
+			}
+		}
+		$.post(url,data,function(result){
+			if(result.status===200){
+				alert('添加成功');
+				loadCustomer();
+				$('#customerModal').modal('hide');
+				$('#input_id').val('');
+				$('#input_realname').val('');
+				$('#input_username').val('');
+				$('input[type=radio]:checked').val('');
+				$('#input_status').val('');
+
+			}
+		})
+	})
+	//将数据动态添加到下拉框
+	function loadOption(){
+		$.get(baseURL+'/CustomerService/findAll',function(res){
+		res.data.forEach(function(item){
+			$('<option value='+item.status+'>'+item.status+'</option>').appendTo($('#select_status'))
+			$('<option value='+item.gender+'>'+item.gender+'</option>').appendTo($('#select_gender'))
+		})
+	})
+	}
+	loadOption();
+	//点击关闭按钮关闭模态框
+	$('#btn_close').on('click',function(){
+		$('#customerModal').modal('hide')
+	})
+	//点击添加客服弹出模态框
+	$('#sumbit_cu').on('click',function(){
+		$('#customerModal').modal('show')
+	})
+	})
+	
+</script>
+
+<div class="main">
+<button id="sumbit_cu"  class="layui-btn layui-btn-normal"><i class="fa fa-info-circle" style="margin-right:5px"></i>添加客服</button>
+	<form >
+	<div class="row">
+		<!-- 状态 -->
+		<div class="form-group col-md-2 ">
+	      <label for="select_status"></label>
+	      <select id="select_status" class="form-control">
+	       <option value="" style="display: none;">在线</option>
+	      
+	      </select>
+	    </div>
+	    <!-- 性别 -->
+	    <div class="form-group col-md-2">
+	      <label for="select_gender"></label>
+	      <select id="select_gender" class="form-control">
+	         <option value="" style="display: none;">性别</option>
+	      </select>
+	    </div>
+	    </div>
+	   
+</form>
+<table class="table" id="customer_table">
+	<thead class="bg-dark" style="color:white">
+		<tr>
+			<td>#</td>
+			<td>用户名</td>
+			<td>姓名</td>
+			<td>性别</td>
+			<td>状态</td>
+			<td>操作</td>
+		</tr>
+	</thead>
+	<tbody>
+		
+	</tbody>
+</table>
+<!-- 保存修改模态框 -->
+		<div class="modal fade" id="customerModal">
+		  <div class="modal-dialog  modal-lg" role="document">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <h4 class="modal-title">修改数据</h4>
+		      </div>
+		      <div class="modal-body">
+		        <form id="employment_form">
+		        	<!-- ID -->
+		        	 <div class="form-group">
+					    <label for="input_id"></label>
+					    <input type="hidden" name='id' class="form-control" id="input_id" >
+					  </div>
+		        	<!-- 真实姓名 -->
+		        	 <div class="form-group row">
+					    <label for="input_realname" class="col-2 text-right">真实姓名:</label>
+					    <input type="text" name='realname' class="form-control col-6" id="input_realname" placeholder="姓名">
+					  </div>
+					  <!-- 用户名 -->
+		        	 <div class="form-group row">
+					    <label for="input_username" class="col-2 text-right">用户名:</label>
+					    <input type="text" name='username' class="form-control col-6" id="input_username" placeholder="姓名">
+					  </div>
+					  <!-- 性别 -->
+		       			<div class="form-group row" id="reee">
+		       				<div class="form-check form-check-inline">
+							  <input class="form-check-input col-4" type="radio" name="gender" id="input_gender" value="male">
+							  <label class="form-check-label" for="input_gender">男</label>
+							</div>
+							<div class="form-check form-check-inline ">
+							  <input class="form-check-input col-4" type="radio" name="gender" id="input_gender" value="female">
+							  <label class="form-check-label" for="input_gender">女</label>
+							</div>
+		       			</div>
+						 <!-- 状态 -->
+			        	 <div class="form-group row">
+						    <label for="input_status" class="col-2 text-right">状态:</label>
+						    <input type="text" name='status' class="form-control col-6" id="input_status" placeholder="状态">
+						  </div>
+					  
+		        </form>
+		       
+		      </div>
+		      <div class="modal-footer">
+		        <button type="button" class="btn btn-default" id="btn_close">取消</button>
+		        <button type="button" class="btn btn-primary" id="btn_submit" >提交</button>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+	
+	<!-- 保存修改模态框 -->
+</div>
+<style>
+.main{
+	position: relative;
+}
+#sumbit_cu{
+	display: inline-block;
+	color: white;
+	
+
+	position: absolute;
+	top: 40px;
+	right: 10px;
+	background-color: #ff6600;
+}
+#reee{
+	margin-left: 60px;
+}
+.modal-backdrop.show{
+		z-index: -1;
+	}
+#customerModal{
+	margin-top: 40px;
+}
+</style>
